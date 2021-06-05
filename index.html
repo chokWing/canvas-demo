@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .wrapper {
+        }
+    </style>
+</head>
+<body>
+<div style="width: 500px;height: 500px;overflow: auto;" class="wrapper">
+
+</div>
+<button onclick="enlarge()">变大</button>
+
+<button onclick="shrink()">变小</button>
+
+<script>
+    var ratio
+    var img
+    var textPadding = 5
+
+    function enlarge() {
+        ratio += 0.1
+        img.style.width = img.naturalWidth * ratio + 'px'
+    }
+
+    function shrink() {
+        ratio -= 0.1
+        img.style.width = img.naturalWidth * ratio + 'px'
+    }
+
+    window.onload = async function () {
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+
+        function canvas2image() {
+            img.src = canvas.toDataURL('image/jpg');
+
+            document.querySelector('.wrapper').appendChild(img);
+            img.style.width = '100%'
+            ratio = img.clientWidth / img.naturalWidth
+        }
+
+        function image2canvas() {
+            return new Promise(((resolve, reject) => {
+                img = new Image();
+                img.src = "./example.jpg";
+
+                img.onload = function () {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    resolve()
+                }
+            }))
+        }
+
+        function fillText() {
+            ctx.textBaseline = 'top';
+            ctx.strokeStyle = "red";
+            ctx.fillStyle = '#fff';
+            ctx.font = "16px serif";
+            ctx.fillText("Hello world", 580, 80);
+            var text = ctx.measureText("Hello world");
+            ctx.strokeRect(580 - textPadding, 80 - textPadding, text.width + 2 * textPadding, text.fontBoundingBoxDescent + 2 * textPadding)
+        }
+
+        await image2canvas()
+        fillText()
+        canvas2image()
+    }
+
+</script>
+</body>
+</html>
